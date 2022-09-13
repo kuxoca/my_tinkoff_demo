@@ -99,20 +99,24 @@ public class MainServiceImp implements MainService {
     private void mainMedhod(URL url) {
         logger.info("Start get data from API... " + url.toString());
 
-        List<DBEntity> entresFromAPI = loadDBEntitisFromPayLoad(rootEntityRepo.getPayload(url));
+        try {
+            List<DBEntity> entresFromAPI = loadDBEntitisFromPayLoad(rootEntityRepo.getPayload(url));
 
-        List<DBEntity> entresFromAPIFilter = new ArrayList<>();
-        for (String catEl : categorys) {
-            entresFromAPIFilter.addAll(entresFromAPI.stream().filter(el -> el.getCategory().equals(catEl)).collect(Collectors.toList()));
-        }
+            List<DBEntity> entresFromAPIFilter = new ArrayList<>();
+            for (String catEl : categorys) {
+                entresFromAPIFilter.addAll(entresFromAPI.stream().filter(el -> el.getCategory().equals(catEl)).collect(Collectors.toList()));
+            }
 
-        List<DBEntity> change = getChangeMap(entresFromAPIFilter);
-        if (!change.isEmpty()) {
-            logger.info("Changes: " + change.size());
-            addAllToCashMap(change);
-            saveEntityToDB(change);
-        } else {
-            logger.info("No changes...");
+            List<DBEntity> change = getChangeMap(entresFromAPIFilter);
+            if (!change.isEmpty()) {
+                logger.info("Changes: " + change.size());
+                addAllToCashMap(change);
+                saveEntityToDB(change);
+            } else {
+                logger.info("No changes...");
+            }
+        } catch (NullPointerException eNull) {
+            logger.warn("Data not load from API", eNull);
         }
     }
 

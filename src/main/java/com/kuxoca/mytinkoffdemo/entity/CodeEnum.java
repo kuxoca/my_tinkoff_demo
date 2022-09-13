@@ -7,6 +7,7 @@ public enum CodeEnum {
     RUR(643),
     KZT(398),
     BYN(933),
+    UZS(860),
     CNY(156);
     private final Integer value;
 

@@ -22,18 +22,22 @@ public class RootEntityRepoImp implements RootEntityRepo {
         try {
             rootEntity = new ObjectMapper().readValue(url, RootEntity.class);
         } catch (JsonParseException e) {
-            logger.error("ERROR to JSON data parse. " + e);
+            logger.error("ERROR to JSON data parse. ", e);
         } catch (JsonMappingException e) {
-            logger.error("ERROR to JSON data mapping. " + e);
+            logger.error("ERROR to JSON data mapping. ", e);
+        } catch (NullPointerException eNull) {
+            logger.error("Data from API is NULL", eNull);
         } catch (IOException e) {
-            logger.error("ERROR load data from API. " + e);
+            logger.error("ERROR load data from API. ", e);
         }
+//        if (rootEntity == null) {
+//            throw new NullPointerException("Data from API is NULL");
+//        }
         return rootEntity;
     }
 
     @Override
     public Payload getPayload(URL url) {
         return getRootEntity(url).getPayload();
-
     }
 }
