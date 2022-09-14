@@ -34,7 +34,7 @@ public interface DBEntityRepo extends JpaRepository<DBEntity, Long> {
             "   and d.category=:category and d.fromCode=:fromCode and d.toCode=:toCode)"
     )
 //    ищет крайнее значенеи по category fromCode toCode
-    List<DBEntity> findMaxByCategoryAndFromCodeAndToCode(
+    DBEntity findMaxByCategoryAndFromCodeAndToCode(
             @Param("category") String category,
             @Param("fromCode") Integer fromCode,
             @Param("toCode") Integer toCode

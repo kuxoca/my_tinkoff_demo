@@ -66,7 +66,10 @@ public class MainServiceImp implements MainService {
 
     private List<URL> getUrls(String str) {
         List<URL> urls = new ArrayList<>();
-        List<String> pair = Arrays.stream(str.split(",")).distinct().collect(Collectors.toList());
+        List<String> pair = Arrays.stream(str.split(","))
+                .map(String::strip)
+                .distinct()
+                .collect(Collectors.toList());
         try {
             urls.add(new URL(baseUrl));
         } catch (MalformedURLException e) {
@@ -74,7 +77,7 @@ public class MainServiceImp implements MainService {
         }
         for (String el : pair) {
             String[] split = el.split(":");
-            String s = baseUrl + "?from=" + split[0] + "&to=" + split[1];
+            String s = baseUrl + "?from=" + split[0].strip() + "&to=" + split[1].strip();
             try {
                 urls.add(new URL(s));
             } catch (MalformedURLException e) {
@@ -85,8 +88,11 @@ public class MainServiceImp implements MainService {
     }
 
     private List<String> getAllCategorys(String category) {
-        List<String> categorys = new ArrayList<>();
-        categorys.addAll(Arrays.stream(category.split(",")).distinct().collect(Collectors.toList()));
+        List<String> categorys =
+                new ArrayList<>(Arrays.stream(category.split(","))
+                .map(String::strip)
+                .distinct()
+                .collect(Collectors.toList()));
         if (!categorys.contains("DebitCardsOperations")) {
             categorys.add("DebitCardsOperations");
         }
@@ -121,9 +127,7 @@ public class MainServiceImp implements MainService {
     }
 
     private void addAllToCashMap(List<DBEntity> change) {
-        change.forEach(el -> {
-            cashMap.put(new Key(el.getCategory(), el.getFromCode(), el.getToCode()), el);
-        });
+        change.forEach(el -> cashMap.put(new Key(el.getCategory(), el.getFromCode(), el.getToCode()), el));
     }
 
     private List<DBEntity> getChangeMap(List<DBEntity> fromAPI) {
@@ -134,7 +138,7 @@ public class MainServiceImp implements MainService {
             }
         }
         if (local.isEmpty()) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         return local;
     }
@@ -184,7 +188,7 @@ public class MainServiceImp implements MainService {
         keys.forEach(key -> {
             logger.info("" + c.getAndIncrement() + " init data...  " + key.getCategory() + " " + key.getFromCode() + " " + key.getToCode());
 
-            addAllToCashMap(dbEntityRepo.findMaxByCategoryAndFromCodeAndToCode(key.getCategory(), key.getFromCode(), key.getToCode()));
+            addAllToCashMap(Collections.singletonList(dbEntityRepo.findMaxByCategoryAndFromCodeAndToCode(key.getCategory(), key.getFromCode(), key.getToCode())));
         });
         logger.info("Init cash size " + cashMap.size());
 
